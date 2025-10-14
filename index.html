@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coinley SDK - Accept Crypto Payments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #764ba2;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: #764ba2;
+            margin: 30px 0 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .code-wrapper {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            color: #888;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.85em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 25px;
+            border-radius: 0 0 8px 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            white-space: pre;
+        }
+
+        .code-block .keyword {
+            color: #569cd6;
+        }
+
+        .code-block .string {
+            color: #ce9178;
+        }
+
+        .code-block .comment {
+            color: #6a9955;
+        }
+
+        .code-block .function {
+            color: #dcdcaa;
+        }
+
+        .code-block .number {
+            color: #b5cea8;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+
+        .highlight h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .network-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .network-table th,
+        .network-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .network-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .network-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .network-table code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        footer {
+            background: #1e1e1e;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .code-block {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><img src="/Logomark.png"></img> Coinley SDK</h1>
+            <p >Accept Cryptocurrency Payments with Ease</p>
+            <span class="version-badge">Version 2.0.0</span>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#quick-start">Quick Start</a></li>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#networks">Networks</a></li>
+                <li><a href="#examples">Examples</a></li>
+                <li><a href="#support">Support</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <section id="overview">
+                <h2>Overview</h2>
+                <p>The Coinley Vanilla SDK is a framework-agnostic JavaScript library for accepting cryptocurrency payments. It works seamlessly with vanilla JavaScript, WordPress, WooCommerce, PHP applications, and any web platform.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🌐 Multi-Chain Support</h4>
+                        <p>Support Ethereum, BSC, Polygon, Arbitrum, Optimism, Avalanche, and Celo</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>💵 Stablecoin Payments</h4>
+                        <p>Accept USDT, USDC, and other popular stablecoins</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📱 Mobile Ready</h4>
+                        <p>Works with mobile wallets via deeplinks and QR codes</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔌 Easy Integration</h4>
+                        <p>Simple CDN setup with just a few lines of code</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="quick-start">
+                <h2>⚡ Quick Start</h2>
+                <p>Get up and running in less than 5 minutes:</p>
+
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">HTML</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block"><span class="keyword">&lt;!DOCTYPE</span> <span class="string">html</span><span class="keyword">&gt;</span>
+<span class="keyword">&lt;html&gt;</span>
+<span class="keyword">&lt;head&gt;</span>
+    <span class="keyword">&lt;title&gt;</span>Crypto Checkout<span class="keyword">&lt;/title&gt;</span>
+<span class="keyword">&lt;/head&gt;</span>
+<span class="keyword">&lt;body&gt;</span>
+    <span class="keyword">&lt;h1&gt;</span>Buy Premium Plan - $100<span class="keyword">&lt;/h1&gt;</span>
+    <span class="keyword">&lt;button</span> <span class="string">id</span>=<span class="string">"pay-button"</span><span class="keyword">&gt;</span>Pay with Crypto<span class="keyword">&lt;/button&gt;</span>
+
+    <span class="comment">&lt;!-- Load Coinley SDK --&gt;</span>
+    <span class="keyword">&lt;script</span> <span class="string">src</span>=<span class="string">"https://unpkg.com/coinley-test@latest/dist/vanilla/coinley-vanilla.umd.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+
+    <span class="keyword">&lt;script&gt;</span>
+        <span class="comment">// Initialize SDK</span>
+        <span class="keyword">const</span> coinley = <span class="keyword">new</span> <span class="function">CoinleyVanilla</span>({
+            apiKey: <span class="string">'your-api-key'</span>,
+            apiSecret: <span class="string">'your-api-secret'</span>,
+            apiUrl: <span class="string">'https://hub.coinley.io/api'</span>,
+            theme: <span class="string">'light'</span>
+        });
+
+        <span class="comment">// Handle payment</span>
+        document.<span class="function">getElementById</span>(<span class="string">'pay-button'</span>).<span class="function">addEventListener</span>(<span class="string">'click'</span>, <span class="keyword">function</span>() {
+            coinley.<span class="function">open</span>({
+                amount: <span class="number">100.00</span>,
+                customerEmail: <span class="string">'customer@example.com'</span>,
+                merchantName: <span class="string">'My Store'</span>,
+                merchantWalletAddresses: {
+                    ethereum: <span class="string">'0x742d35Cc6634C0532925a3b8D6Ac8d9dddCAE63b'</span>,
+                    bsc: <span class="string">'0x742d35Cc6634C0532925a3b8D6Ac8d9dddCAE63b'</span>,
+                    polygon: <span class="string">'0x742d35Cc6634C0532925a3b8D6Ac8d9dddCAE63b'</span>
+                }
+            }, {
+                <span class="function">onSuccess</span>: <span class="keyword">function</span>(paymentId, txHash) {
+                    <span class="function">alert</span>(<span class="string">'Payment successful! TX: '</span> + txHash);
+                    window.location.href = <span class="string">'/success'</span>;
+                },
+                <span class="function">onError</span>: <span class="keyword">function</span>(error) {
+                    <span class="function">alert</span>(<span class="string">'Payment failed: '</span> + error);
+                }
+            });
+        });
+    <span class="keyword">&lt;/script&gt;</span>
+<span class="keyword">&lt;/body&gt;</span>
+<span class="keyword">&lt;/html&gt;</span></pre>
+                </div>
+
+                <div class="success">
+                    <strong>✅ That's it!</strong> Your site is now ready to accept cryptocurrency payments.
+                </div>
+            </section>
+
+            <section id="installation">
+                <h2>📦 Installation</h2>
+
+                <h3>Option 1: CDN (Recommended)</h3>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">HTML</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block"><span class="comment">&lt;!-- Latest version --&gt;</span>
+<span class="keyword">&lt;script</span> <span class="string">src</span>=<span class="string">"https://unpkg.com/coinley-test@latest/dist/vanilla/coinley-vanilla.umd.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Specific version (recommended for production) --&gt;</span>
+<span class="keyword">&lt;script</span> <span class="string">src</span>=<span class="string">"https://unpkg.com/coinley-test@2.0.0/dist/vanilla/coinley-vanilla.umd.js"</span><span class="keyword">&gt;&lt;/script&gt;</span></pre>
+                </div>
+
+                <h3>Option 2: NPM</h3>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">BASH</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block">npm install coinley-test</pre>
+                </div>
+
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">JAVASCRIPT</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block"><span class="keyword">import</span> CoinleyVanilla <span class="keyword">from</span> <span class="string">'coinley-test/dist/vanilla/coinley-vanilla.umd.js'</span>;</pre>
+                </div>
+            </section>
+
+            <section id="configuration">
+                <h2>⚙️ Configuration</h2>
+
+                <h3>SDK Initialization</h3>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">JAVASCRIPT</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block"><span class="keyword">const</span> coinley = <span class="keyword">new</span> <span class="function">CoinleyVanilla</span>({
+    apiKey: <span class="string">'your-api-key'</span>,              <span class="comment">// Required</span>
+    apiSecret: <span class="string">'your-api-secret'</span>,         <span class="comment">// Required</span>
+    apiUrl: <span class="string">'https://hub.coinley.io/api'</span>, <span class="comment">// Required</span>
+    theme: <span class="string">'light'</span>,                       <span class="comment">// Optional: 'light' or 'dark'</span>
+    debug: <span class="keyword">false</span>                          <span class="comment">// Optional: Enable logging</span>
+});</pre>
+                </div>
+
+                <h3>Payment Configuration</h3>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">JAVASCRIPT</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block">coinley.<span class="function">open</span>({
+    <span class="comment">// Required</span>
+    amount: <span class="number">100.00</span>,
+    customerEmail: <span class="string">'customer@example.com'</span>,
+    
+    <span class="comment">// Optional</span>
+    merchantName: <span class="string">'My Store'</span>,
+    callbackUrl: <span class="string">'https://mystore.com/webhook'</span>,
+    
+    <span class="comment">// Wallet addresses per network</span>
+    merchantWalletAddresses: {
+        ethereum: <span class="string">'0x...'</span>,
+        bsc: <span class="string">'0x...'</span>,
+        polygon: <span class="string">'0x...'</span>,
+        arbitrum: <span class="string">'0x...'</span>,
+        optimism: <span class="string">'0x...'</span>,
+        avalanche: <span class="string">'0x...'</span>,
+        celo: <span class="string">'0x...'</span>
+    },
+    
+    <span class="comment">// Defaults</span>
+    preferredNetwork: <span class="string">'ethereum'</span>,
+    preferredCurrency: <span class="string">'USDT'</span>,
+    
+    <span class="comment">// Custom data</span>
+    metadata: {
+        orderId: <span class="string">'12345'</span>,
+        productName: <span class="string">'Premium Plan'</span>
+    }
+}, callbacks);</pre>
+                </div>
+
+                <h3>Callbacks</h3>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">JAVASCRIPT</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block">{
+    <span class="function">onSuccess</span>: <span class="keyword">function</span>(paymentId, txHash, details) {
+        console.<span class="function">log</span>(<span class="string">'Payment completed!'</span>);
+        console.<span class="function">log</span>(<span class="string">'Payment ID:'</span>, paymentId);
+        console.<span class="function">log</span>(<span class="string">'Transaction:'</span>, txHash);
+        <span class="comment">// Redirect or update UI</span>
+    },
+    
+    <span class="function">onError</span>: <span class="keyword">function</span>(error) {
+        console.<span class="function">error</span>(<span class="string">'Payment failed:'</span>, error);
+        <span class="comment">// Show error message</span>
+    },
+    
+    <span class="function">onClose</span>: <span class="keyword">function</span>() {
+        console.<span class="function">log</span>(<span class="string">'Modal closed'</span>);
+        <span class="comment">// Clean up</span>
+    }
+}</pre>
+                </div>
+            </section>
+
+            <section id="networks">
+                <h2>🌐 Supported Networks</h2>
+                <p>The SDK supports multiple blockchain networks for maximum flexibility:</p>
+
+                <table class="network-table">
+                    <thead>
+                        <tr>
+                            <th>Network</th>
+                            <th>Key</th>
+                            <th>Chain ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ethereum</td>
+                            <td><code>ethereum</code></td>
+                            <td>0x1</td>
+                        </tr>
+                        <tr>
+                            <td>BSC</td>
+                            <td><code>bsc</code></td>
+                            <td>0x38</td>
+                        </tr>
+                        <tr>
+                            <td>Polygon</td>
+                            <td><code>polygon</code></td>
+                            <td>0x89</td>
+                        </tr>
+                        <tr>
+                            <td>Arbitrum</td>
+                            <td><code>arbitrum</code></td>
+                            <td>0xa4b1</td>
+                        </tr>
+                        <tr>
+                            <td>Optimism</td>
+                            <td><code>optimism</code></td>
+                            <td>0xa</td>
+                        </tr>
+                        <tr>
+                            <td>Avalanche</td>
+                            <td><code>avalanche</code></td>
+                            <td>0xa86a</td>
+                        </tr>
+                        <tr>
+                            <td>Celo</td>
+                            <td><code>celo</code></td>
+                            <td>0xa4ec</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="warning">
+                    <strong>⚠️ Important:</strong> You must provide wallet addresses for each network you want to support. Only networks with configured wallets will be shown to users.
+                </div>
+
+                <h3>Using the Same Wallet Across Networks</h3>
+                <p>Since EVM wallet addresses work across all EVM chains, you can use the same address:</p>
+
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">JAVASCRIPT</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block"><span class="keyword">const</span> myWallet = <span class="string">'0x9d961e093FFeC1577d124Cfe65233fE140E88Fc4'</span>;
+
+merchantWalletAddresses: {
+    ethereum: myWallet,
+    bsc: myWallet,
+    polygon: myWallet,
+    arbitrum: myWallet,
+    optimism: myWallet,
+    avalanche: myWallet,
+    celo: myWallet
+}</pre>
+                </div>
+            </section>
+
+            <section id="examples">
+                <h2>💡 Examples</h2>
+
+                <h3>E-commerce Checkout</h3>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">JAVASCRIPT</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block">document.<span class="function">getElementById</span>(<span class="string">'checkout-btn'</span>).<span class="function">addEventListener</span>(<span class="string">'click'</span>, <span class="keyword">function</span>() {
+    <span class="keyword">const</span> cartTotal = <span class="number">249.99</span>;
+    <span class="keyword">const</span> userEmail = document.<span class="function">getElementById</span>(<span class="string">'email'</span>).value;
+    
+    coinley.<span class="function">open</span>({
+        amount: cartTotal,
+        customerEmail: userEmail,
+        merchantName: <span class="string">'Tech Store'</span>,
+        merchantWalletAddresses: {
+            ethereum: <span class="string">'0x742d35Cc6634C0532925a3b8D6Ac8d9dddCAE63b'</span>,
+            polygon: <span class="string">'0x742d35Cc6634C0532925a3b8D6Ac8d9dddCAE63b'</span>
+        },
+        metadata: {
+            orderId: <span class="string">'ORD-'</span> + Date.<span class="function">now</span>(),
+            items: [<span class="string">'Laptop'</span>, <span class="string">'Mouse'</span>]
+        }
+    }, {
+        <span class="function">onSuccess</span>: <span class="keyword">function</span>(paymentId, txHash) {
+            <span class="comment">// Update order status</span>
+            <span class="function">fetch</span>(<span class="string">'/api/orders/complete'</span>, {
+                method: <span class="string">'POST'</span>,
+                headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+                body: JSON.<span class="function">stringify</span>({
+                    orderId: <span class="string">'ORD-'</span> + Date.<span class="function">now</span>(),
+                    paymentId: paymentId,
+                    txHash: txHash
+                })
+            }).<span class="function">then</span>(() => {
+                window.location.href = <span class="string">'/order-confirmation'</span>;
+            });
+        }
+    });
+});</pre>
+                </div>
+
+                <h3>Subscription Payment</h3>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">JAVASCRIPT</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block"><span class="keyword">function</span> <span class="function">subscribeToPlan</span>(planName, price) {
+    coinley.<span class="function">open</span>({
+        amount: price,
+        customerEmail: <span class="function">getCurrentUserEmail</span>(),
+        merchantName: <span class="string">'SaaS Platform'</span>,
+        merchantWalletAddresses: {
+            ethereum: <span class="string">'0x742d35Cc6634C0532925a3b8D6Ac8d9dddCAE63b'</span>
+        },
+        metadata: {
+            subscriptionPlan: planName,
+            userId: <span class="function">getCurrentUserId</span>()
+        }
+    }, {
+        <span class="function">onSuccess</span>: <span class="keyword">function</span>(paymentId) {
+            <span class="function">activateSubscription</span>(planName, paymentId);
+        },
+        <span class="function">onError</span>: <span class="keyword">function</span>(error) {
+            <span class="function">showErrorMessage</span>(<span class="string">'Subscription failed: '</span> + error);
+        }
+    });
+}</pre>
+                </div>
+
+                <h3>WordPress Integration</h3>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang">PHP</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre class="code-block"><span class="comment">// functions.php</span>
+<span class="keyword">function</span> <span class="function">enqueue_coinley_sdk</span>() {
+    <span class="function">wp_enqueue_script</span>(
+        <span class="string">'coinley-vanilla'</span>,
+        <span class="string">'https://unpkg.com/coinley-test@latest/dist/vanilla/coinley-vanilla.umd.js'</span>,
+        <span class="function">array</span>(),
+        <span class="string">'2.0.0'</span>,
+        <span class="keyword">true</span>
+    );
+    
+    <span class="function">wp_localize_script</span>(<span class="string">'coinley-vanilla'</span>, <span class="string">'coinleyConfig'</span>, <span class="function">array</span>(
+        <span class="string">'apiKey'</span> => <span class="function">get_option</span>(<span class="string">'coinley_api_key'</span>),
+        <span class="string">'apiSecret'</span> => <span class="function">get_option</span>(<span class="string">'coinley_api_secret'</span>),
+        <span class="string">'wallets'</span> => <span class="function">array</span>(
+            <span class="string">'ethereum'</span> => <span class="function">get_option</span>(<span class="string">'coinley_ethereum_wallet'</span>),
+            <span class="string">'polygon'</span> => <span class="function">get_option</span>(<span class="string">'coinley_polygon_wallet'</span>)
+        )
+    ));
+}
+<span class="function">add_action</span>(<span class="string">'wp_enqueue_scripts'</span>, <span class="string">'enqueue_coinley_sdk'</span>);</pre>
+                </div>
+            </section>
+
+            <section id="security">
+                <h2>🔒 Security Best Practices</h2>
+                
+                <div class="highlight">
+                    <h3>Never Expose API Credentials</h3>
+                    <p>While the SDK runs on the client-side, always load API credentials from your server-side configuration, never hardcode them in your JavaScript files.</p>
+                </div>
+
+                <ul style="margin-left: 20px;">
+                    <li style="margin: 10px 0;">✅ Always use HTTPS for your website</li>
+                    <li style="margin: 10px 0;">✅ Validate webhook signatures on your backend</li>
+                    <li style="margin: 10px 0;">✅ Verify payments server-side, don't rely solely on client callbacks</li>
+                    <li style="margin: 10px 0;">✅ Store API keys in environment variables</li>
+                    <li style="margin: 10px 0;">✅ Use specific version numbers in production (not @latest)</li>
+                </ul>
+            </section>
+
+            <section id="support">
+                <h2>💬 Support & Resources</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📚 Documentation</h4>
+                        <p><a href="https://docs.coinley.io" style="color: #667eea;">docs.coinley.io</a></p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>💻 GitHub</h4>
+                        <p><a href="https://github.com/coinley/coinley-sdk" style="color: #667eea;">View on GitHub</a></p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📧 Email Support</h4>
+                        <p><a href="mailto:support@coinley.io" style="color: #667eea;">support@coinley.io</a></p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🎮 Demo</h4>
+                        <p><a href="https://demo.coinley.io" style="color: #667eea;">Try Live Demo</a></p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <a href="https://hub.coinley.io/signup" class="button">Get Your API Keys →</a>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>© 2025 Coinley. All rights reserved.</p>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                <a href="https://coinley.io/terms">Terms</a> • 
+                <a href="https://coinley.io/privacy">Privacy</a> • 
+                <a href="https://docs.coinley.io">Docs</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.parentElement.nextElementSibling;
+            const code = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
